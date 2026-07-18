@@ -1,72 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Edit2, Save, Heart, Star, MapPin, Music, Coffee, Flame } from 'lucide-react';
+import type { Profile } from '../types';
+import { profileRepo } from '../repositories/ProfileRepository';
 
-interface ProfileData {
-  name: string;
-  nickname: string;
-  birthday: string;
-  color: string;
-  food: string;
-  song: string;
-  movie: string;
-  quote: string;
-  traits: string;
-  loveLanguage: string;
-  hobbies: string;
-  dreamDest: string;
-  mood: string;
-  status: 'Online' | 'Offline';
-  avatar: string;
-}
-
-const defaultYuvi: ProfileData = {
-  name: 'Yuvi',
-  nickname: 'Yuv',
-  birthday: 'January 1, 2000',
-  color: 'Blue',
-  food: 'Pizza',
-  song: 'Perfect - Ed Sheeran',
-  movie: 'Inception',
-  quote: '"To infinity and beyond."',
-  traits: 'Funny, Caring, Loyal',
-  loveLanguage: 'Quality Time',
-  hobbies: 'Gaming, Coding, Photography',
-  dreamDest: 'Tokyo, Japan',
-  mood: '😊 Happy',
-  status: 'Online',
-  avatar: 'Y',
-};
-
-const defaultManvi: ProfileData = {
-  name: 'Manvi',
-  nickname: 'Manu',
-  birthday: 'February 14, 2000',
-  color: 'Pink',
-  food: 'Pasta',
-  song: 'A Thousand Years',
-  movie: 'The Notebook',
-  quote: '"Love is in the air."',
-  traits: 'Sweet, Creative, Passionate',
-  loveLanguage: 'Words of Affirmation',
-  hobbies: 'Painting, Reading, Travel',
-  dreamDest: 'Paris, France',
-  mood: '🥰 Loved',
-  status: 'Online',
-  avatar: 'M',
-};
-
-function ProfileCard({ initialData, delay }: { initialData: ProfileData; delay: number }) {
+function ProfileCard({ initialData, delay, onSave }: { initialData: Profile; delay: number, onSave: (data: Profile) => Promise<void> }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [data, setData] = useState<ProfileData>(initialData);
+  const [data, setData] = useState<Profile>(initialData);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleChange = (field: keyof ProfileData, value: string) => {
+  const handleChange = (field: keyof Profile, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setIsSaving(true);
+    await onSave(data);
+    setIsSaving(false);
     setIsEditing(false);
-    // In a real app, save to backend or localStorage here
   };
 
   return (
@@ -79,7 +30,8 @@ function ProfileCard({ initialData, delay }: { initialData: ProfileData; delay: 
       <div className="absolute top-4 right-4 z-20">
         <button
           onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-          className="p-2 bg-[var(--color-bg-glass)] hover:bg-black/10 rounded-full transition-colors border border-[var(--color-border-glass)]"
+          disabled={isSaving}
+          className="p-2 bg-[var(--color-bg-glass)] hover:bg-black/10 rounded-full transition-colors border border-[var(--color-border-glass)] disabled:opacity-50"
         >
           {isEditing ? <Save className="w-5 h-5 text-green-500" /> : <Edit2 className="w-5 h-5 text-[var(--color-text-main)]" />}
         </button>
@@ -118,13 +70,13 @@ function ProfileCard({ initialData, delay }: { initialData: ProfileData; delay: 
 
       <div className="space-y-4 relative z-10">
         {[
-          { label: 'Birthday', icon: Star, field: 'birthday' as keyof ProfileData },
-          { label: 'Favorite Color', icon: Heart, field: 'color' as keyof ProfileData },
-          { label: 'Favorite Food', icon: Coffee, field: 'food' as keyof ProfileData },
-          { label: 'Favorite Song', icon: Music, field: 'song' as keyof ProfileData },
-          { label: 'Love Language', icon: Heart, field: 'loveLanguage' as keyof ProfileData },
-          { label: 'Hobbies', icon: Flame, field: 'hobbies' as keyof ProfileData },
-          { label: 'Dream Destination', icon: MapPin, field: 'dreamDest' as keyof ProfileData },
+          { label: 'Birthday', icon: Star, field: 'birthday' as keyof Profile },
+          { label: 'Favorite Color', icon: Heart, field: 'color' as keyof Profile },
+          { label: 'Favorite Food', icon: Coffee, field: 'food' as keyof Profile },
+          { label: 'Favorite Song', icon: Music, field: 'song' as keyof Profile },
+          { label: 'Love Language', icon: Heart, field: 'loveLanguage' as keyof Profile },
+          { label: 'Hobbies', icon: Flame, field: 'hobbies' as keyof Profile },
+          { label: 'Dream Destination', icon: MapPin, field: 'dreamDest' as keyof Profile },
         ].map((item) => (
           <div key={item.field} className="flex flex-col border-b border-[var(--color-border-glass)] pb-2">
             <div className="flex items-center gap-2 text-sm text-[var(--color-accent-primary)] font-semibold uppercase tracking-wider mb-1">
@@ -134,12 +86,12 @@ function ProfileCard({ initialData, delay }: { initialData: ProfileData; delay: 
             {isEditing ? (
               <input
                 type="text"
-                value={data[item.field]}
+                value={data[item.field] as string}
                 onChange={(e) => handleChange(item.field, e.target.value)}
                 className="text-[var(--color-text-main)] bg-black/5 rounded px-2 py-1 outline-none border border-[var(--color-border-glass)]"
               />
             ) : (
-              <div className="text-[var(--color-text-main)]">{data[item.field]}</div>
+              <div className="text-[var(--color-text-main)]">{data[item.field] as string}</div>
             )}
           </div>
         ))}
@@ -163,6 +115,23 @@ function ProfileCard({ initialData, delay }: { initialData: ProfileData; delay: 
 }
 
 export default function Profiles() {
+  const [yuvi, setYuvi] = useState<Profile | null>(null);
+  const [manvi, setManvi] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    async function loadProfiles() {
+      const y = await profileRepo.getYuvi();
+      const m = await profileRepo.getManvi();
+      setYuvi(y);
+      setManvi(m);
+    }
+    loadProfiles();
+  }, []);
+
+  const handleSave = async (updatedData: Profile) => {
+    await profileRepo.update(updatedData.id, updatedData);
+  };
+
   return (
     <div className="min-h-screen pt-12 pb-32 px-4 max-w-6xl mx-auto relative z-10">
       <motion.div 
@@ -175,8 +144,8 @@ export default function Profiles() {
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <ProfileCard initialData={defaultYuvi} delay={0.1} />
-        <ProfileCard initialData={defaultManvi} delay={0.3} />
+        {yuvi ? <ProfileCard initialData={yuvi} delay={0.1} onSave={handleSave} /> : <div className="h-96 glass-panel rounded-3xl animate-pulse" />}
+        {manvi ? <ProfileCard initialData={manvi} delay={0.3} onSave={handleSave} /> : <div className="h-96 glass-panel rounded-3xl animate-pulse" />}
       </div>
     </div>
   );
