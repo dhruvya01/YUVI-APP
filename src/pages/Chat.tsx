@@ -65,8 +65,8 @@ export default function Chat() {
   };
 
   return (
-    <div className="min-h-screen pt-4 pb-32 px-4 max-w-4xl mx-auto relative z-10 flex flex-col">
-      <div className="glass-panel flex-1 rounded-3xl overflow-hidden flex flex-col border border-[var(--color-border-glass)] shadow-2xl backdrop-blur-xl h-[80vh]">
+    <div className="pt-8 pb-32 px-4 max-w-4xl mx-auto relative z-10 flex flex-col items-center justify-center">
+      <div className="w-full glass-panel rounded-3xl overflow-hidden flex flex-col border border-[var(--color-border-glass)] shadow-2xl backdrop-blur-xl h-[calc(100vh-10rem)] max-h-[800px]">
         
         {/* Chat Header */}
         <div className="px-6 py-4 border-b border-[var(--color-border-glass)] flex items-center justify-between bg-black/5">
@@ -119,7 +119,7 @@ export default function Chat() {
                       <p className="text-[15px] leading-relaxed">{msg.text}</p>
                     </div>
                   </div>
-                  <div className={`text-[10px] text-[var(--color-text-muted)] mt-1 px-8 ${isMine ? 'text-right' : 'text-left'}`}>
+                  <div className={`text-[10px] text-[var(--color-text-muted)] mt-1 ${isMine ? 'text-right pr-2' : 'text-left pl-10'}`}>
                     {msg.timestamp} {isMine && <span className="ml-1 opacity-70">✓✓</span>}
                   </div>
                 </motion.div>
@@ -147,13 +147,13 @@ export default function Chat() {
         </div>
 
         {/* Chat Input */}
-        <div className="p-4 bg-black/5 border-t border-[var(--color-border-glass)] flex items-end gap-2">
-          <div className="flex gap-2 text-[var(--color-text-muted)] pb-2 px-2">
+        <div className="p-3 bg-black/5 border-t border-[var(--color-border-glass)] flex items-end gap-2">
+          <div className="flex gap-2 text-[var(--color-text-muted)] pb-3 px-1">
             <button className="hover:text-[var(--color-accent-primary)] transition-colors"><Paperclip className="w-5 h-5" /></button>
             <button className="hover:text-[var(--color-accent-primary)] transition-colors"><ImageIcon className="w-5 h-5" /></button>
           </div>
           
-          <div className="flex-1 bg-white/50 backdrop-blur-md border border-[var(--color-border-glass)] rounded-2xl flex items-end shadow-inner">
+          <div className="flex-1 bg-[var(--color-bg-glass)] backdrop-blur-md border border-[var(--color-border-glass)] rounded-2xl flex items-end shadow-inner mb-1">
             <button className="p-3 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-colors">
               <Smile className="w-5 h-5" />
             </button>
@@ -178,7 +178,7 @@ export default function Chat() {
           <button 
             onClick={handleSend}
             disabled={!inputText.trim()}
-            className="p-3 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-secondary)] text-white rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+            className="p-3 mb-1 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-secondary)] text-white rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
           >
             <Send className="w-5 h-5" />
           </button>
