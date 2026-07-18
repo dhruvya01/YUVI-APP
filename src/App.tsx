@@ -16,6 +16,7 @@ import Settings from './pages/Settings'
 import Profiles from './pages/Profiles'
 import Chat from './pages/Chat'
 import Arcade from './pages/Arcade'
+import PandaHouse from './pages/PandaHouse'
 import { PandaWidget } from './components/panda/PandaWidget'
 
 function MainApp() {
@@ -42,6 +43,7 @@ function MainApp() {
           <Route path="/profiles" element={<Profiles />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/arcade" element={<Arcade />} />
+          <Route path="/panda-house" element={<PandaHouse />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </BrowserRouter>

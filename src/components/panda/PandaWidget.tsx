@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Gamepad2, Apple, ShoppingBag, Home, Minus } from 'lucide-react';
 import { usePandaState } from '../../hooks/usePandaState';
 import { PandaCharacter } from './PandaCharacter';
 
 export function PandaWidget() {
+  const navigate = useNavigate();
   const { mochi, momo, loading, feed, play, pet } = usePandaState();
   const [isMinimized, setIsMinimized] = useState(false);
   const [position, setPosition] = useState({ x: window.innerWidth - 350, y: window.innerHeight - 200 });
@@ -61,10 +63,10 @@ export function PandaWidget() {
               <button onClick={() => { feed('mochi', 'Bamboo'); feed('momo', 'Strawberry'); }} className="p-1.5 bg-black/5 hover:bg-black/10 rounded-full transition-colors text-red-500" title="Feed">
                 <Apple className="w-4 h-4" />
               </button>
-              <button className="p-1.5 bg-black/5 hover:bg-black/10 rounded-full transition-colors text-yellow-600" title="Shop">
+              <button onClick={() => navigate('/panda-house')} className="p-1.5 bg-black/5 hover:bg-black/10 rounded-full transition-colors text-yellow-600" title="Shop">
                 <ShoppingBag className="w-4 h-4" />
               </button>
-              <button className="p-1.5 bg-black/5 hover:bg-black/10 rounded-full transition-colors text-blue-500" title="Panda House">
+              <button onClick={() => navigate('/panda-house')} className="p-1.5 bg-black/5 hover:bg-black/10 rounded-full transition-colors text-blue-500" title="Panda House">
                 <Home className="w-4 h-4" />
               </button>
             </div>
