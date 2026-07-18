@@ -43,6 +43,8 @@ export interface Profile {
   updatedAt: string;
 }
 
+export * from './panda';
+
 export interface Message {
   id: string;
   text: string;

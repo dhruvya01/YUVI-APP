@@ -15,6 +15,7 @@ import LoveLetters from './pages/LoveLetters'
 import Settings from './pages/Settings'
 import Profiles from './pages/Profiles'
 import Chat from './pages/Chat'
+import { PandaWidget } from './components/panda/PandaWidget'
 
 function MainApp() {
   const { introSeen } = useTheme()
@@ -31,6 +32,7 @@ function MainApp() {
       {!isUnlocked && <LockScreen onUnlock={() => setIsUnlocked(true)} />}
       <BrowserRouter>
         <Navigation />
+        <PandaWidget />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/story" element={<OurStory />} />
