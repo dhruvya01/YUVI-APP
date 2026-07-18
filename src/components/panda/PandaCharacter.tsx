@@ -32,13 +32,22 @@ export function PandaCharacter({ panda, onPet, reverse }: PandaCharacterProps) {
           {panda.name} Lvl {panda.stats.level}
         </div>
         
-        {/* Image Placeholder (Waiting for user to upload) */}
-        <div className={`w-20 h-20 bg-[var(--color-bg-glass)] border border-[var(--color-border-glass)] rounded-2xl flex items-center justify-center shadow-md overflow-hidden ${reverse ? 'scale-x-[-1]' : ''}`}>
-           {/* If user uploads /assets/panda.png it will show, else fallback */}
-           <img src="/assets/panda.png" alt={panda.name} className="w-full h-full object-cover opacity-80" onError={(e) => {
-             e.currentTarget.style.display = 'none';
-             e.currentTarget.parentElement!.innerHTML = '<span class="text-3xl">🐼</span>';
-           }} />
+        {/* Panda Image */}
+        <div className={`
+          flex items-center justify-center overflow-hidden
+          ${reverse ? 'scale-x-[-1]' : ''} 
+          ${panda.id === 'mochi' ? 'w-24 h-24' : 'w-16 h-16'}
+        `}>
+           <img 
+              src={`/assets/panda_${panda.id}.png`} 
+              alt={panda.name} 
+              className="w-full h-full object-contain drop-shadow-xl" 
+              style={{ mixBlendMode: 'multiply' }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.innerHTML = '<span class="text-3xl">🐼</span>';
+              }} 
+           />
         </div>
         
         {/* Mood Bubble */}

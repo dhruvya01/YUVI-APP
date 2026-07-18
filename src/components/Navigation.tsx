@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, BookOpen, Image as ImageIcon, Mail, Settings, User, MessageCircle } from 'lucide-react';
+import { Home, BookOpen, Image as ImageIcon, Mail, Settings, User, MessageCircle, Gamepad2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Navigation() {
@@ -7,6 +7,7 @@ export default function Navigation() {
     { path: '/', icon: Home, label: 'Home' },
     { path: '/profiles', icon: User, label: 'Profiles' },
     { path: '/chat', icon: MessageCircle, label: 'Chat' },
+    { path: '/arcade', icon: Gamepad2, label: 'Arcade' },
     { path: '/story', icon: BookOpen, label: 'Story' },
     { path: '/gallery', icon: ImageIcon, label: 'Gallery' },
     { path: '/letters', icon: Mail, label: 'Letters' },

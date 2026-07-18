@@ -1,20 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Panda, PandaMood } from '../types';
+import type { Panda, PandaMood, ArcadeStats } from '../types';
 import { pandaRepo } from '../repositories/PandaRepository';
+import { arcadeRepo } from '../repositories/ArcadeRepository';
 
 const DECAY_INTERVAL = 60000; // 1 minute in real time
 
 export function usePandaState() {
   const [mochi, setMochi] = useState<Panda | null>(null);
   const [momo, setMomo] = useState<Panda | null>(null);
+  const [arcadeStats, setArcadeStats] = useState<ArcadeStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadPandas = useCallback(async () => {
     setLoading(true);
     const mochiData = await pandaRepo.getMochi();
     const momoData = await pandaRepo.getMomo();
+    const arcadeData = await arcadeRepo.getStats();
     setMochi(mochiData);
     setMomo(momoData);
+    setArcadeStats(arcadeData);
     setLoading(false);
   }, []);
 
@@ -153,5 +157,53 @@ export function usePandaState() {
     else setMomo(updated);
   };
 
-  return { mochi, momo, loading, feed, play, pet };
+  const addArcadeRewards = async (coinsReward: number, heartsReward: number, xpReward: number, gameId: string, score: number) => {
+    if (!arcadeStats || !mochi || !momo) return;
+
+    // Update global stats
+    const updatedHighScores = { ...arcadeStats.highScores };
+    if (!updatedHighScores[gameId] || score > updatedHighScores[gameId]) {
+      updatedHighScores[gameId] = score;
+    }
+
+    const newArcade = {
+      ...arcadeStats,
+      coins: arcadeStats.coins + coinsReward,
+      hearts: arcadeStats.hearts + heartsReward,
+      highScores: updatedHighScores
+    };
+
+    await arcadeRepo.saveStats(newArcade);
+    setArcadeStats(newArcade);
+
+    // Distribute XP to both pandas
+    const distributeXp = (p: Panda): Panda => {
+      const newXp = p.stats.xp + xpReward;
+      let level = p.stats.level;
+      let xpNeeded = p.stats.xpNeeded;
+      if (newXp >= xpNeeded) {
+        level += 1;
+        xpNeeded = Math.floor(xpNeeded * 1.5);
+      }
+      return {
+        ...p,
+        stats: {
+          ...p.stats,
+          xp: newXp,
+          level,
+          xpNeeded
+        }
+      };
+    };
+
+    const newMochi = distributeXp(mochi);
+    const newMomo = distributeXp(momo);
+
+    await pandaRepo.update(newMochi.id, newMochi);
+    await pandaRepo.update(newMomo.id, newMomo);
+    setMochi(newMochi);
+    setMomo(newMomo);
+  };
+
+  return { mochi, momo, arcadeStats, loading, feed, play, pet, addArcadeRewards };
 }

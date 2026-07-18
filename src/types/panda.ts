@@ -33,3 +33,12 @@ export interface PandaWidgetState {
   isMinimized: boolean;
   position: { x: number; y: number };
 }
+
+export interface ArcadeStats {
+  coins: number;
+  hearts: number;
+  streak: number;
+  highScores: Record<string, number>;
+  lastPlayedDate?: string;
+}
+
