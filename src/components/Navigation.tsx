@@ -1,6 +1,5 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, BookOpen, Image as ImageIcon, Mail, Music, Map, Gamepad2, Settings } from 'lucide-react';
+import { Home, BookOpen, Image as ImageIcon, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Navigation() {

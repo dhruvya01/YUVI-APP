@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storyTimeline } from '../data/mockData';
 import { Play, Pause, X, Calendar, ChevronRight } from 'lucide-react';

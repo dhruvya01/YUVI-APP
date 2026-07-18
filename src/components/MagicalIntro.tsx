@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
@@ -185,7 +184,7 @@ export default function MagicalIntro() {
           {step === 7 && (
             <motion.div key="timer" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 1.5 }} className="flex flex-col items-center">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center mt-8">
-                {[{l: 'Years', v: years}, {l: 'Days', v: displayDays}, {l: 'Hours', v: hours}, {l: 'Mins', v: minutes}, {l: 'Secs', v: seconds}].filter(u => u.v > 0 || u.l === 'Secs').map((unit, i) => (
+                {[{l: 'Years', v: years}, {l: 'Days', v: displayDays}, {l: 'Hours', v: hours}, {l: 'Mins', v: minutes}, {l: 'Secs', v: seconds}].filter(u => u.v > 0 || u.l === 'Secs').map((unit) => (
                   <div key={unit.l} className="flex flex-col items-center justify-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
                     <span className="text-4xl md:text-6xl font-bold font-sans text-rose-400">{unit.v}</span>
                     <span className="text-sm uppercase tracking-wider text-rose-200 mt-2">{unit.l}</span>

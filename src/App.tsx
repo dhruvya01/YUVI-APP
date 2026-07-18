@@ -1,4 +1,3 @@
-import React from 'react'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 import MagicalIntro from './components/MagicalIntro'
 import Home from './components/Home'
