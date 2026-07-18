@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { galleryPhotos } from '../data/mockData';
 import { Heart, Maximize2, X, Filter } from 'lucide-react';

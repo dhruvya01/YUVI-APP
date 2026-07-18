@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { storyTimeline } from '../data/mockData';
-import { Play, Pause, X, Calendar, ChevronRight } from 'lucide-react';
+import { Play, Pause, X, Calendar } from 'lucide-react';
 
 export default function OurStory() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -9,7 +11,7 @@ export default function OurStory() {
 
   // Slideshow effect
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
     if (isPlaying) {
       setSelectedId(storyTimeline[playIndex].id);
       timer = setTimeout(() => {

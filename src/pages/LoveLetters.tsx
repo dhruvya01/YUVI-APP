@@ -1,6 +1,8 @@
+import { useState } from "react";
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { loveLetters } from '../data/mockData';
-import { Mail, Lock, Heart, X, PenTool } from 'lucide-react';
+import { Lock, Heart, X, PenTool } from 'lucide-react';
 
 export default function LoveLetters() {
   const [openedLetterId, setOpenedLetterId] = useState<number | null>(null);
