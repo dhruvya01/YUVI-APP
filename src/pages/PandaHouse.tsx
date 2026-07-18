@@ -42,7 +42,7 @@ export default function PandaHouse() {
   }
 
   const handleBuyCostume = async (costume: typeof COSTUME_SHOP[0]) => {
-    const item: Omit<InventoryItem, 'quantity'> = {
+    const item: Omit<InventoryItem, 'quantity' | 'createdAt' | 'updatedAt'> = {
       id: `costume_${costume.id}`,
       name: costume.name,
       type: 'costume',
@@ -53,7 +53,7 @@ export default function PandaHouse() {
   };
 
   const handleBuyFood = async (food: { id: string, name: string, price: number, icon: string, effect: string }) => {
-    const item: Omit<InventoryItem, 'quantity'> = {
+    const item: Omit<InventoryItem, 'quantity' | 'createdAt' | 'updatedAt'> = {
       id: food.id,
       name: food.name,
       type: 'food',

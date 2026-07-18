@@ -298,7 +298,7 @@ export function usePandaState() {
     setMomo(newMomo);
   };
 
-  const buyItem = async (item: Omit<InventoryItem, 'quantity'>, price: number) => {
+  const buyItem = async (item: Omit<InventoryItem, 'quantity' | 'createdAt' | 'updatedAt'>, price: number) => {
     if (!arcadeStats) return false;
     if (arcadeStats.coins < price) return false;
 

@@ -58,6 +58,7 @@ export interface DiaryEntry {
   date: string; // YYYY-MM-DD
   text: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface InventoryItem {
@@ -67,4 +68,6 @@ export interface InventoryItem {
   icon: string;
   quantity: number;
   effect?: string; // description of effect
+  createdAt: string;
+  updatedAt: string;
 }
