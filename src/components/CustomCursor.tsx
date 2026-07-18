@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { Heart } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 export default function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
+  const { theme } = useTheme();
   
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -26,7 +27,6 @@ export default function CustomCursor() {
     document.body.addEventListener('mouseenter', handleMouseEnter);
     document.body.addEventListener('mouseleave', handleMouseLeave);
 
-    // Initial check
     if (document.body.matches(':hover')) {
       setIsVisible(true);
     }
@@ -48,7 +48,11 @@ export default function CustomCursor() {
         y: cursorYSpring,
       }}
     >
-      <Heart className="text-rose-400 opacity-70 w-6 h-6" fill="currentColor" />
+      {theme === 'panda-paradise' ? (
+        <span className="text-2xl drop-shadow-md">🐾</span>
+      ) : (
+        <Heart className="text-rose-400 opacity-70 w-6 h-6" fill="currentColor" />
+      )}
     </motion.div>
   );
 }

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'sakura' | 'midnight' | 'lavender' | 'ocean' | 'forest' | 'minimal' | 'classic' | 'galaxy';
+export type Theme = 'sakura' | 'midnight' | 'lavender' | 'ocean' | 'forest' | 'minimal' | 'classic' | 'galaxy' | 'panda-paradise';
 
 interface ThemeContextType {
   theme: Theme;

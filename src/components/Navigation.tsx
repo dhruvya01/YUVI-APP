@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, BookOpen, Image as ImageIcon, Mail } from 'lucide-react';
+import { Home, BookOpen, Image as ImageIcon, Mail, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Navigation() {
@@ -8,6 +8,7 @@ export default function Navigation() {
     { path: '/story', icon: BookOpen, label: 'Story' },
     { path: '/gallery', icon: ImageIcon, label: 'Gallery' },
     { path: '/letters', icon: Mail, label: 'Letters' },
+    { path: '/settings', icon: Settings, label: 'Settings' },
   ];
 
   return (

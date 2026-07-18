@@ -10,6 +10,7 @@ import Navigation from './components/Navigation'
 import OurStory from './pages/OurStory'
 import Gallery from './pages/Gallery'
 import LoveLetters from './pages/LoveLetters'
+import Settings from './pages/Settings'
 
 function MainApp() {
   const { introSeen } = useTheme()
@@ -29,6 +30,7 @@ function MainApp() {
           <Route path="/story" element={<OurStory />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/letters" element={<LoveLetters />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </BrowserRouter>
     </div>

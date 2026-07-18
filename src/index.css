@@ -114,6 +114,17 @@
     --border-glass: rgba(255, 255, 255, 0.1);
     --glow: rgba(217, 70, 239, 0.3);
   }
+
+  [data-theme="panda-paradise"] {
+    --bg-base: #f7f9f2;
+    --bg-glass: rgba(248, 248, 245, 0.6);
+    --text-main: #2f3e34;
+    --text-muted: #66786c;
+    --accent-primary: #a8d5ba;
+    --accent-secondary: #c8b88a;
+    --border-glass: rgba(47, 62, 52, 0.1);
+    --glow: rgba(168, 213, 186, 0.4);
+  }
 }
 
 body {
