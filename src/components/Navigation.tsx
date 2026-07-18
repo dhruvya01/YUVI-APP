@@ -1,10 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { Home, BookOpen, Image as ImageIcon, Mail, Settings } from 'lucide-react';
+import { Home, BookOpen, Image as ImageIcon, Mail, Settings, User, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Navigation() {
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
+    { path: '/profiles', icon: User, label: 'Profiles' },
+    { path: '/chat', icon: MessageCircle, label: 'Chat' },
     { path: '/story', icon: BookOpen, label: 'Story' },
     { path: '/gallery', icon: ImageIcon, label: 'Gallery' },
     { path: '/letters', icon: Mail, label: 'Letters' },

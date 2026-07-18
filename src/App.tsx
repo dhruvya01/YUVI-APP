@@ -11,6 +11,8 @@ import OurStory from './pages/OurStory'
 import Gallery from './pages/Gallery'
 import LoveLetters from './pages/LoveLetters'
 import Settings from './pages/Settings'
+import Profiles from './pages/Profiles'
+import Chat from './pages/Chat'
 
 function MainApp() {
   const { introSeen } = useTheme()
@@ -30,6 +32,8 @@ function MainApp() {
           <Route path="/story" element={<OurStory />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/letters" element={<LoveLetters />} />
+          <Route path="/profiles" element={<Profiles />} />
+          <Route path="/chat" element={<Chat />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </BrowserRouter>
