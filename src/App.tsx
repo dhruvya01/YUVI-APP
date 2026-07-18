@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 import MagicalIntro from './components/MagicalIntro'
 import Home from './components/Home'
@@ -5,6 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import DynamicBackground from './components/DynamicBackground'
 import CustomCursor from './components/CustomCursor'
+import LockScreen from './components/LockScreen'
 
 import Navigation from './components/Navigation'
 import OurStory from './pages/OurStory'
@@ -16,6 +18,7 @@ import Chat from './pages/Chat'
 
 function MainApp() {
   const { introSeen } = useTheme()
+  const [isUnlocked, setIsUnlocked] = useState(false)
 
   if (!introSeen) {
     return <MagicalIntro />
@@ -25,6 +28,7 @@ function MainApp() {
     <div className="relative w-full min-h-screen cursor-none pb-24">
       <CustomCursor />
       <DynamicBackground />
+      {!isUnlocked && <LockScreen onUnlock={() => setIsUnlocked(true)} />}
       <BrowserRouter>
         <Navigation />
         <Routes>
