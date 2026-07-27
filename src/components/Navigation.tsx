@@ -1,8 +1,12 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Home, Image as ImageIcon, Settings, User, MessageCircle, Gamepad2, HeartHandshake } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Navigation() {
+  const location = useLocation();
+
+  if (location.pathname === '/chat') return null;
+
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
     { path: '/gallery', icon: ImageIcon, label: 'Memories' },
