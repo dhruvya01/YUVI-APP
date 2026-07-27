@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Coffee, BookOpen, Trees, Backpack, ShoppingBag, Scroll, Heart, Zap } from 'lucide-react';
 import { usePandaState } from '../hooks/usePandaState';
+import { PandaCharacter } from '../components/panda/PandaCharacter';
 import type { PandaRoom, InventoryItem } from '../types';
 
 const ROOMS: PandaRoom[] = ['Bedroom', 'Kitchen', 'Living Room', 'Garden'];
@@ -180,38 +181,23 @@ export default function PandaHouse() {
                 {activeRoom === 'Living Room' && <span className="absolute top-4 left-4 text-3xl">📺</span>}
 
                 {/* Panda Mochi */}
-                <motion.div 
-                  className="flex flex-col items-center cursor-pointer relative group"
-                  onClick={() => handlePetPanda('mochi')}
-                  animate={{ y: [0, -4, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                >
-                  <div className="bg-slate-900/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-700 shadow-md mb-1 flex items-center gap-1">
-                    <span>Mochi 🐼</span>
-                    {mochi?.costume && <span>{mochi.costume === 'Wizard' ? '🧙‍♂️' : mochi.costume === 'Ninja' ? '🥷' : '👑'}</span>}
-                  </div>
-
-                  <div className="text-6xl filter drop-shadow-xl hover:scale-110 transition-transform">
-                    🐼
-                  </div>
-                </motion.div>
+                {mochi && (
+                  <PandaCharacter 
+                    panda={mochi} 
+                    onPet={() => handlePetPanda('mochi')} 
+                    size="lg"
+                  />
+                )}
 
                 {/* Panda Momo */}
-                <motion.div 
-                  className="flex flex-col items-center cursor-pointer relative group"
-                  onClick={() => handlePetPanda('momo')}
-                  animate={{ y: [0, -3, 0] }}
-                  transition={{ repeat: Infinity, duration: 2.2 }}
-                >
-                  <div className="bg-slate-900/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-700 shadow-md mb-1 flex items-center gap-1">
-                    <span>Momo 🐾</span>
-                    {momo?.costume && <span>{momo.costume === 'Wizard' ? '🧙‍♂️' : momo.costume === 'Ninja' ? '🥷' : '👑'}</span>}
-                  </div>
-
-                  <div className="text-6xl filter drop-shadow-xl hover:scale-110 transition-transform">
-                    🐾
-                  </div>
-                </motion.div>
+                {momo && (
+                  <PandaCharacter 
+                    panda={momo} 
+                    onPet={() => handlePetPanda('momo')} 
+                    size="lg"
+                    reverse
+                  />
+                )}
               </div>
 
               {/* Live Stat Meters */}
