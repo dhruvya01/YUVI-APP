@@ -241,30 +241,30 @@ export default function Chat() {
                       {msg.photo && (
                         <div 
                           onClick={() => setPreviewPhoto(msg.photo || null)}
-                          className="relative max-w-[240px] rounded-2xl overflow-hidden border border-slate-700 shadow-xl cursor-pointer group bg-slate-800"
+                          className="relative max-w-[180px] rounded-xl overflow-hidden border border-slate-700 shadow-md cursor-pointer group bg-slate-800"
                         >
                           <img 
                             src={msg.photo} 
                             alt="Snap" 
-                            className="w-full max-h-60 object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full max-h-40 object-cover group-hover:scale-105 transition-transform duration-300"
                           />
-                          <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md text-[10px] px-2 py-0.5 rounded-full font-bold text-white flex items-center gap-1">
+                          <div className="absolute bottom-1.5 left-1.5 bg-black/60 backdrop-blur-md text-[9px] px-1.5 py-0.5 rounded-full font-bold text-white flex items-center gap-1">
                             <span>📷 Snap</span>
                           </div>
                         </div>
                       )}
 
-                      {/* Snapchat Saved-in-Chat Text Card */}
+                      {/* Compact Snapchat Saved-in-Chat Text Card */}
                       {msg.text && (
-                        <div className="bg-slate-800/90 border-l-2 border-slate-600 px-3.5 py-2 rounded-r-2xl rounded-bl-2xl text-sm leading-relaxed text-slate-100 shadow-sm max-w-[90%] break-words font-sans">
+                        <div className="bg-slate-800/90 border-l-2 border-slate-600 px-2.5 py-1 rounded-r-xl rounded-bl-xl text-xs leading-snug text-slate-100 shadow-sm inline-block max-w-[80%] break-words">
                           {msg.text}
                         </div>
                       )}
 
                       {/* Snapchat Status line */}
-                      <div className="flex items-center gap-1 text-[9px] text-slate-500 font-medium pl-1">
-                        <Bookmark className="w-2.5 h-2.5 text-slate-400 fill-slate-400" /> Saved
-                        {isMine && <CheckCheck className="w-3 h-3 text-blue-400 ml-1" />}
+                      <div className="flex items-center gap-1 text-[8px] text-slate-500 font-medium pl-0.5">
+                        <Bookmark className="w-2 h-2 text-slate-400 fill-slate-400" /> Saved
+                        {isMine && <CheckCheck className="w-2.5 h-2.5 text-blue-400 ml-1" />}
                       </div>
                     </div>
                   </div>
