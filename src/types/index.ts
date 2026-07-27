@@ -38,6 +38,7 @@ export interface Profile {
   mood: string;
   status: 'Online' | 'Offline' | 'Busy';
   avatar: string;
+  photo?: string;
   themePreference: string;
   createdAt: string;
   updatedAt: string;

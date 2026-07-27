@@ -7,7 +7,6 @@ import CustomCursor from './components/CustomCursor'
 
 import Navigation from './components/Navigation'
 import Gallery from './pages/Gallery'
-import Settings from './pages/Settings'
 import Profiles from './pages/Profiles'
 import Chat from './pages/Chat'
 import Arcade from './pages/Arcade'
@@ -29,7 +28,7 @@ function MainApp() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/arcade" element={<Arcade />} />
           <Route path="/panda-house" element={<PandaHouse />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings" element={<Profiles />} />
         </Routes>
       </BrowserRouter>
     </div>
