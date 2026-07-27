@@ -17,7 +17,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { profileRepo } from '../repositories/ProfileRepository';
 import { streakRepo } from '../repositories/StreakRepository';
@@ -225,18 +225,6 @@ export default function Chat() {
     }
   };
 
-  const handleClearAllChat = async () => {
-    if (!window.confirm('Are you sure you want to delete all messages in this chat?')) return;
-    try {
-      const chatRef = collection(db, 'forever_us_chat');
-      const snapshot = await getDocs(chatRef);
-      const deletePromises = snapshot.docs.map((docSnap) => deleteDoc(docSnap.ref));
-      await Promise.all(deletePromises);
-    } catch (e) {
-      console.error('Failed to clear chat history:', e);
-    }
-  };
-
   const formatTime = (isoString: string) => {
     try {
       const date = new Date(isoString);
@@ -309,36 +297,26 @@ export default function Chat() {
           </div>
         </div>
 
-        {/* Actions: Clear Chat & Sender Switcher */}
-        <div className="flex items-center gap-2">
+        {/* Sender Switcher */}
+        <div className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-full border border-slate-700">
           <button
-            onClick={handleClearAllChat}
-            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-full transition-colors"
-            title="Clear Chat History"
+            onClick={() => setCurrentUser('yuvi')}
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 ${
+              currentUser === 'yuvi' ? 'bg-[#0084FF] text-white shadow-md' : 'text-slate-400'
+            }`}
           >
-            <Trash2 className="w-4 h-4" />
+            {yuviProfile?.photo && <img src={yuviProfile.photo} alt="Yuvi" className="w-3.5 h-3.5 rounded-full object-cover" />}
+            Yuvi 💙
           </button>
-
-          <div className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-full border border-slate-700">
-            <button
-              onClick={() => setCurrentUser('yuvi')}
-              className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 ${
-                currentUser === 'yuvi' ? 'bg-[#0084FF] text-white shadow-md' : 'text-slate-400'
-              }`}
-            >
-              {yuviProfile?.photo && <img src={yuviProfile.photo} alt="Yuvi" className="w-3.5 h-3.5 rounded-full object-cover" />}
-              Yuvi 💙
-            </button>
-            <button
-              onClick={() => setCurrentUser('manvi')}
-              className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 ${
-                currentUser === 'manvi' ? 'bg-[#FF2A85] text-white shadow-md' : 'text-slate-400'
-              }`}
-            >
-              {manviProfile?.photo && <img src={manviProfile.photo} alt="Manvi" className="w-3.5 h-3.5 rounded-full object-cover" />}
-              Manvi 💖
-            </button>
-          </div>
+          <button
+            onClick={() => setCurrentUser('manvi')}
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 ${
+              currentUser === 'manvi' ? 'bg-[#FF2A85] text-white shadow-md' : 'text-slate-400'
+            }`}
+          >
+            {manviProfile?.photo && <img src={manviProfile.photo} alt="Manvi" className="w-3.5 h-3.5 rounded-full object-cover" />}
+            Manvi 💖
+          </button>
         </div>
       </div>
 
