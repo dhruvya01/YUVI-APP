@@ -76,30 +76,11 @@ export default function Chat() {
   const yuviSaidToday = streak?.lastYuviDate === todayStr;
   const manviSaidToday = streak?.lastManviDate === todayStr;
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  // Subscribe to Streak & Profiles
-  useEffect(() => {
-    async function loadUserProfiles() {
-      try {
-        const y = await profileRepo.getYuvi();
-        const m = await profileRepo.getManvi();
-        setYuviProfile(y);
-        setManviProfile(m);
-      } catch (e) {
-        console.error('Failed to fetch user profiles for chat:', e);
-      }
+  const scrollToBottom = (instant = false) => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: instant ? 'auto' : 'smooth' });
     }
-    loadUserProfiles();
-
-    const unsubStreak = streakRepo.subscribeToStreak((data) => {
-      setStreak(data);
-    });
-
-    return () => unsubStreak();
-  }, []);
+  };
 
   // Real-time Firestore chat listener
   useEffect(() => {
@@ -125,6 +106,7 @@ export default function Chat() {
 
       setMessages(fetched);
       setLoading(false);
+      requestAnimationFrame(() => scrollToBottom(true));
     }, (error) => {
       console.error('Firestore chat error:', error);
       setLoading(false);
@@ -134,8 +116,10 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, attachedPhoto]);
+    if (!loading) {
+      scrollToBottom(false);
+    }
+  }, [messages.length, attachedPhoto]);
 
   const triggerLoveEffect = (emoji: string) => {
     const newHeart = { id: Date.now(), emoji, x: Math.random() * 80 + 10 };
@@ -229,6 +213,27 @@ export default function Chat() {
     }
   };
 
+  // Subscribe to Streak & Profiles
+  useEffect(() => {
+    async function loadUserProfiles() {
+      try {
+        const y = await profileRepo.getYuvi();
+        const m = await profileRepo.getManvi();
+        setYuviProfile(y);
+        setManviProfile(m);
+      } catch (e) {
+        console.error('Failed to fetch user profiles for chat:', e);
+      }
+    }
+    loadUserProfiles();
+
+    const unsubStreak = streakRepo.subscribeToStreak((data) => {
+      setStreak(data);
+    });
+
+    return () => unsubStreak();
+  }, []);
+
   const formatTime = (isoString: string) => {
     try {
       const date = new Date(isoString);
@@ -239,7 +244,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950 text-white flex flex-col h-[100dvh] w-full max-w-md mx-auto overflow-hidden font-sans select-none relative">
+    <div className="fixed inset-0 z-50 bg-slate-950 text-white flex flex-col h-full w-full max-w-md mx-auto overflow-hidden font-sans select-none">
       
       {/* Floating Hearts Layer */}
       <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
