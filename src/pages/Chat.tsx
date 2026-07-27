@@ -39,8 +39,10 @@ interface ChatMessage {
 
 const CHAT_REACTIONS = ['❤️', '🔥', '😂', '💖', '👍', '🥰'];
 
-const LOVE_STICKERS = [
-  '💖', '💌', '🌹', '🧸', '👑', '🎁', '🎀', '🐼', '🐾', '💕', '🍦', '🦄', '✨', '💐', '💍', '🍓'
+const STICKER_CATEGORIES: { name: string; stickers: string[] }[] = [
+  { name: 'Love 💖', stickers: ['💖', '💌', '🌹', '🧸', '👑', '🎁', '🎀', '💕'] },
+  { name: 'Pandas 🐼', stickers: ['🐼', '🐾', '🎋', '💤', '🪴', '🌸', '✨', '👑'] },
+  { name: 'Sweets 🍦', stickers: ['🍦', '🍓', '🧁', '🍩', '🍫', '🍭', '🧋', '🍒'] },
 ];
 
 export default function Chat() {
@@ -54,6 +56,7 @@ export default function Chat() {
   const [previewPhoto, setPreviewPhoto] = useState<{ photo: string; caption?: string } | null>(null);
   const [activeReactionId, setActiveReactionId] = useState<string | null>(null);
   const [showStickerDrawer, setShowStickerDrawer] = useState(false);
+  const [stickerTab, setStickerTab] = useState(0);
   const [floatingHearts, setFloatingHearts] = useState<{ id: number; emoji: string; x: number }[]>([]);
 
   // Streak state
@@ -211,6 +214,7 @@ export default function Chat() {
       const msgRef = doc(db, 'forever_us_chat', messageId);
       await updateDoc(msgRef, { reaction: emoji });
       setActiveReactionId(null);
+      triggerLoveEffect(emoji);
     } catch (e) {
       console.error('Failed to add reaction:', e);
     }
@@ -256,7 +260,7 @@ export default function Chat() {
       </div>
 
       {/* Header */}
-      <div className="px-4 py-3 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 flex items-center justify-between shrink-0 z-10">
+      <div className="px-4 py-3 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 flex items-center justify-between shrink-0 z-10 shadow-lg">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => navigate('/')}
@@ -379,49 +383,38 @@ export default function Chat() {
                   exit={{ opacity: 0, scale: 0.9 }}
                   className="flex flex-col space-y-1 relative group"
                 >
-                  <div className="flex items-start gap-2">
+                  <div className={`flex items-start gap-2 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
                     {/* Avatar */}
-                    <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 mt-0.5 border border-slate-700 bg-slate-800 flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 mt-0.5 border border-slate-700 bg-slate-800 flex items-center justify-center shadow-md">
                       {senderProfile?.photo ? (
                         <img src={senderProfile.photo} alt={msg.sender} className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-[9px] font-bold uppercase text-white">{msg.sender.charAt(0)}</span>
+                        <span className="text-[10px] font-bold uppercase text-white">{msg.sender.charAt(0)}</span>
                       )}
                     </div>
 
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center justify-between pr-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xs font-black capitalize ${
-                            isMine ? 'text-blue-400' : 'text-pink-400'
-                          }`}>
-                            {senderProfile?.name || msg.sender}
-                          </span>
-                          <span className="text-[9px] text-slate-500 font-medium">
-                            {formatTime(msg.createdAt)}
-                          </span>
-                        </div>
-
-                        {/* Individual Delete Message Button */}
-                        <button
-                          onClick={() => handleDeleteMessage(msg.id)}
-                          className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 p-0.5 transition-opacity"
-                          title="Delete message"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
+                    <div className={`flex-1 space-y-1 ${isMine ? 'items-end text-right' : 'items-start text-left'}`}>
+                      <div className={`flex items-center gap-1.5 ${isMine ? 'justify-end' : 'justify-start'}`}>
+                        <span className={`text-[11px] font-extrabold capitalize ${
+                          isMine ? 'text-blue-400' : 'text-pink-400'
+                        }`}>
+                          {senderProfile?.name || msg.sender}
+                        </span>
+                        <span className="text-[9px] text-slate-500 font-medium">
+                          {formatTime(msg.createdAt)}
+                        </span>
                       </div>
 
                       {/* Photo Attachment */}
                       {msg.photo && (
                         <div 
                           onClick={() => setPreviewPhoto({ photo: msg.photo!, caption: msg.photoCaption })}
-                          className="relative max-w-[200px] rounded-2xl overflow-hidden border border-slate-700 shadow-md cursor-pointer group bg-slate-800"
+                          className="relative max-w-[220px] rounded-2xl overflow-hidden border border-slate-700 shadow-lg cursor-pointer group bg-slate-800"
                         >
                           <img 
                             src={msg.photo} 
                             alt="Attached" 
-                            className="w-full max-h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full max-h-52 object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           {msg.photoCaption && (
                             <div className="absolute inset-x-0 bottom-0 bg-black/80 py-1.5 px-3 text-center text-[11px] font-bold text-white border-t border-white/10">
@@ -433,14 +426,14 @@ export default function Chat() {
 
                       {/* Love Sticker */}
                       {msg.sticker && (
-                        <div className="text-5xl my-1 animate-bounce">
+                        <div className="text-5xl my-1 animate-bounce filter drop-shadow-lg">
                           {msg.sticker}
                         </div>
                       )}
 
                       {/* Voice Note Simulation */}
                       {msg.isVoice && (
-                        <div className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-2 rounded-2xl text-xs font-bold max-w-[200px] shadow-md">
+                        <div className="flex items-center gap-2 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold max-w-[210px] shadow-md border border-white/10">
                           <Mic className="w-4 h-4 text-amber-300 animate-pulse" />
                           <span>Voice Note</span>
                           <div className="flex gap-0.5 items-center ml-auto">
@@ -451,23 +444,23 @@ export default function Chat() {
                         </div>
                       )}
 
-                      {/* Text Card */}
+                      {/* Text Card with Modern Gradient Bubbles */}
                       {msg.text && !msg.isVoice && (
                         <div 
                           onClick={() => setActiveReactionId(isReactionActive ? null : msg.id)}
                           onDoubleClick={() => handleAddReaction(msg.id, '❤️')}
-                          className={`px-3 py-1.5 rounded-2xl text-xs leading-relaxed text-slate-100 shadow-sm inline-block max-w-[85%] break-words cursor-pointer transition-all ${
+                          className={`px-3.5 py-2 rounded-2xl text-xs leading-relaxed text-white shadow-md inline-block max-w-[85%] break-words cursor-pointer transition-all ${
                             isMine 
-                              ? 'bg-blue-600/90 rounded-tr-none' 
-                              : 'bg-pink-600/90 rounded-tl-none'
+                              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 rounded-tr-none border border-blue-500/30' 
+                              : 'bg-gradient-to-r from-rose-500 to-pink-600 rounded-tl-none border border-rose-500/30'
                           }`}
                         >
                           {msg.text}
                         </div>
                       )}
 
-                      {/* Reaction & Status */}
-                      <div className="flex items-center gap-2 text-[8px] text-slate-500 font-medium pl-0.5">
+                      {/* Reaction & Status Bar */}
+                      <div className={`flex items-center gap-2 text-[8px] text-slate-500 font-medium ${isMine ? 'justify-end' : 'justify-start'}`}>
                         <div className="flex items-center gap-0.5">
                           <Bookmark className="w-2 h-2 text-slate-400 fill-slate-400" />
                           <span>Saved</span>
@@ -487,7 +480,7 @@ export default function Chat() {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
-                            className="flex items-center gap-1 bg-slate-800 border border-slate-700 p-1 rounded-full w-max shadow-xl mt-1"
+                            className={`flex items-center gap-1 bg-slate-900 border border-slate-700 p-1.5 rounded-full shadow-2xl mt-1 w-max ${isMine ? 'ml-auto' : 'mr-auto'}`}
                           >
                             {CHAT_REACTIONS.map((emoji) => (
                               <button
@@ -552,7 +545,7 @@ export default function Chat() {
         </div>
       )}
 
-      {/* Love Stickers Drawer */}
+      {/* Categorized Love Stickers Drawer */}
       <AnimatePresence>
         {showStickerDrawer && (
           <motion.div
@@ -562,13 +555,26 @@ export default function Chat() {
             className="bg-slate-900 border-t border-slate-800 p-3 shrink-0 overflow-hidden"
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-slate-400">Send a Love Sticker ✨</span>
+              <div className="flex gap-2 text-xs">
+                {STICKER_CATEGORIES.map((cat, idx) => (
+                  <button
+                    key={cat.name}
+                    onClick={() => setStickerTab(idx)}
+                    className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                      stickerTab === idx ? 'bg-pink-600 text-white' : 'bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
               <button onClick={() => setShowStickerDrawer(false)} className="text-slate-500 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
+
             <div className="grid grid-cols-8 gap-2 text-2xl py-1">
-              {LOVE_STICKERS.map((sticker) => (
+              {STICKER_CATEGORIES[stickerTab].stickers.map((sticker) => (
                 <button
                   key={sticker}
                   onClick={() => handleSendSticker(sticker)}
@@ -647,7 +653,7 @@ export default function Chat() {
           type="button"
           onClick={() => handleSend()}
           disabled={!inputText.trim() && !attachedPhoto}
-          className="w-9 h-9 bg-[#0084FF] hover:bg-blue-600 text-white rounded-full transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md flex items-center justify-center shrink-0 active:scale-95"
+          className="w-9 h-9 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md flex items-center justify-center shrink-0 active:scale-95"
         >
           <Send className="w-4 h-4 fill-white" />
         </button>
