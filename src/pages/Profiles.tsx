@@ -7,7 +7,51 @@ import { profileRepo } from '../repositories/ProfileRepository';
 import { useTheme } from '../context/ThemeContext';
 import type { Theme } from '../context/ThemeContext';
 
-function ProfileCard({ initialData, delay, onSave }: { initialData: Profile; delay: number, onSave: (data: Profile) => Promise<void> }) {
+const DEFAULT_YUVI: Profile = {
+  id: 'yuvi',
+  name: 'Yuvi',
+  nickname: 'Handsome',
+  birthday: 'December 2',
+  color: 'Midnight Blue 💙',
+  food: 'Pizza 🍕',
+  song: 'Forever Yours 🎵',
+  movie: 'Interstellar 🚀',
+  quote: 'In all the world, there is no heart for me like yours.',
+  traits: 'Loving, Ambitious, Caring',
+  loveLanguage: 'Quality Time & Words',
+  hobbies: 'Coding, Gaming, Traveling',
+  dreamDest: 'Switzerland 🏔️',
+  mood: 'In Love 🥰',
+  status: 'Online',
+  avatar: '👨‍💻',
+  themePreference: 'midnight',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+};
+
+const DEFAULT_MANVI: Profile = {
+  id: 'manvi',
+  name: 'Manvi',
+  nickname: 'Angel',
+  birthday: 'August 14',
+  color: 'Sakura Pink 💖',
+  food: 'Pasta & Chocolates 🍝',
+  song: 'Lover 🎶',
+  movie: 'Tangled 👑',
+  quote: 'You are my today and all of my tomorrows.',
+  traits: 'Sweet, Creative, Cute',
+  loveLanguage: 'Physical Touch & Gifts',
+  hobbies: 'Painting, Reading, Music',
+  dreamDest: 'Paris 🗼',
+  mood: 'Happy 😊',
+  status: 'Online',
+  avatar: '👩‍🎨',
+  themePreference: 'sakura',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+};
+
+function ProfileCard({ initialData, onSave }: { initialData: Profile; onSave: (data: Profile) => Promise<void> }) {
   const [isEditing, setIsEditing] = useState(false);
   const [data, setData] = useState<Profile>(initialData);
   const [isSaving, setIsSaving] = useState(false);
@@ -49,9 +93,9 @@ function ProfileCard({ initialData, delay, onSave }: { initialData: Profile; del
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0.95, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.6, type: 'spring' }}
+      transition={{ duration: 0.2 }}
       className="glass-panel p-6 rounded-3xl relative overflow-hidden border border-[var(--color-border-glass)] shadow-xl"
     >
       <div className="absolute top-4 right-4 z-20">
@@ -165,15 +209,19 @@ function ProfileCard({ initialData, delay, onSave }: { initialData: Profile; del
 export default function Profiles() {
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<'profiles' | 'settings'>('profiles');
-  const [yuvi, setYuvi] = useState<Profile | null>(null);
-  const [manvi, setManvi] = useState<Profile | null>(null);
+  const [yuvi, setYuvi] = useState<Profile>(DEFAULT_YUVI);
+  const [manvi, setManvi] = useState<Profile>(DEFAULT_MANVI);
 
   useEffect(() => {
     async function loadProfiles() {
-      const y = await profileRepo.getYuvi();
-      const m = await profileRepo.getManvi();
-      setYuvi(y);
-      setManvi(m);
+      try {
+        const y = await profileRepo.getYuvi();
+        const m = await profileRepo.getManvi();
+        if (y) setYuvi(y);
+        if (m) setManvi(m);
+      } catch (e) {
+        console.error('Error loading profiles:', e);
+      }
     }
     loadProfiles();
   }, []);
@@ -226,20 +274,22 @@ export default function Profiles() {
         {activeTab === 'profiles' ? (
           <motion.div
             key="profiles-tab"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
+            initial={{ opacity: 0.95, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            transition={{ duration: 0.15 }}
             className="space-y-6"
           >
-            {yuvi ? <ProfileCard initialData={yuvi} delay={0.1} onSave={handleSave} /> : <div className="h-80 glass-panel rounded-3xl animate-pulse" />}
-            {manvi ? <ProfileCard initialData={manvi} delay={0.2} onSave={handleSave} /> : <div className="h-80 glass-panel rounded-3xl animate-pulse" />}
+            <ProfileCard initialData={yuvi} onSave={handleSave} />
+            <ProfileCard initialData={manvi} onSave={handleSave} />
           </motion.div>
         ) : (
           <motion.div
             key="settings-tab"
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
+            initial={{ opacity: 0.95, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            transition={{ duration: 0.15 }}
             className="space-y-4"
           >
             <div className="glass-panel p-4 rounded-2xl border border-[var(--color-border-glass)] mb-4">
@@ -248,14 +298,11 @@ export default function Profiles() {
             </div>
 
             <div className="grid grid-cols-1 gap-3">
-              {themes.map((t, i) => {
+              {themes.map((t) => {
                 const isActive = theme === t.id;
                 return (
                   <motion.div
                     key={t.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
                     onClick={() => setTheme(t.id)}
                     className={`glass-panel p-4 rounded-2xl cursor-pointer transition-all border ${
                       isActive ? 'border-[var(--color-accent-primary)] shadow-md bg-[var(--color-accent-primary)]/10' : 'border-[var(--color-border-glass)] hover:border-[var(--color-accent-secondary)]'
