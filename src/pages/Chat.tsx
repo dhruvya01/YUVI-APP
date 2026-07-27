@@ -286,9 +286,9 @@ export default function Chat() {
                 {activeOtherProfile?.name || otherUser}
               </h2>
               {/* Daily Love Streak Badge */}
-              <div className="flex items-center gap-0.5 bg-rose-500/20 text-rose-400 text-[11px] font-black px-2 py-0.5 rounded-full border border-rose-500/30">
-                <Flame className="w-3.5 h-3.5 fill-rose-500" />
-                <span>{streak?.streakCount || 0}d Streak</span>
+              <div className="flex items-center gap-1 bg-rose-500/15 text-rose-400 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-rose-500/25">
+                <Flame className="w-3 h-3 fill-rose-500 text-rose-500" />
+                <span>{streak?.streakCount || 0}d</span>
               </div>
             </div>
             <p className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
@@ -320,18 +320,18 @@ export default function Chat() {
         </div>
       </div>
 
-      {/* Daily "I Love You" Streak Tracker Banner */}
-      <div className="bg-slate-900/90 border-b border-slate-800 px-4 py-2 flex items-center justify-between text-xs shrink-0">
-        <div className="flex items-center gap-2">
-          <Heart className="w-4 h-4 text-rose-500 fill-rose-500 animate-pulse" />
-          <span className="font-bold text-slate-200">Daily "I Love You" Streak</span>
+      {/* Ultra Compact Modern Streak Bar */}
+      <div className="bg-slate-900/60 border-b border-slate-800/80 px-3.5 py-1.5 flex items-center justify-between text-[10px] shrink-0">
+        <div className="flex items-center gap-1.5 text-slate-300 font-semibold">
+          <Flame className="w-3 h-3 text-rose-500 fill-rose-500 animate-pulse" />
+          <span>"I Love You" Daily Streak</span>
         </div>
 
-        <div className="flex items-center gap-3 text-[11px] font-semibold">
-          <span className={yuviSaidToday ? 'text-emerald-400' : 'text-amber-400'}>
+        <div className="flex items-center gap-1.5 font-bold">
+          <span className={`px-2 py-0.5 rounded-full border text-[9px] ${yuviSaidToday ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border-amber-500/30'}`}>
             Yuvi {yuviSaidToday ? '❤️' : '⏳'}
           </span>
-          <span className={manviSaidToday ? 'text-emerald-400' : 'text-amber-400'}>
+          <span className={`px-2 py-0.5 rounded-full border text-[9px] ${manviSaidToday ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border-amber-500/30'}`}>
             Manvi {manviSaidToday ? '❤️' : '⏳'}
           </span>
         </div>
