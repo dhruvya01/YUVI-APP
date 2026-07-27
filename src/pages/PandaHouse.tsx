@@ -194,7 +194,7 @@ export default function PandaHouse() {
                   <PandaCharacter 
                     panda={momo} 
                     onPet={() => handlePetPanda('momo')} 
-                    size="lg"
+                    size="sm"
                     reverse
                   />
                 )}

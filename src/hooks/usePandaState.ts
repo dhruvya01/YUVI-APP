@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Panda, PandaMood, PandaAction, PandaRoom, ArcadeStats, DiaryEntry, InventoryItem } from '../types';
-import { pandaRepo } from '../repositories/PandaRepository';
+import { pandaRepo, DEFAULT_MOCHI, DEFAULT_MOMO } from '../repositories/PandaRepository';
 import { arcadeRepo } from '../repositories/ArcadeRepository';
 import { diaryRepo } from '../repositories/DiaryRepository';
 import { inventoryRepo } from '../repositories/InventoryRepository';
@@ -11,12 +11,12 @@ const AI_INTERVAL = 15000; // 15 seconds independent decision loop
 const ROOMS: PandaRoom[] = ['Bedroom', 'Kitchen', 'Living Room', 'Garden'];
 
 export function usePandaState() {
-  const [mochi, setMochi] = useState<Panda | null>(null);
-  const [momo, setMomo] = useState<Panda | null>(null);
+  const [mochi, setMochi] = useState<Panda>(DEFAULT_MOCHI);
+  const [momo, setMomo] = useState<Panda>(DEFAULT_MOMO);
   const [arcadeStats, setArcadeStats] = useState<ArcadeStats | null>(null);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [diary, setDiary] = useState<DiaryEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const loadAllData = useCallback(async () => {
     setLoading(true);

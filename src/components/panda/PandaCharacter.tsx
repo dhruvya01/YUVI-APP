@@ -25,8 +25,8 @@ export function PandaCharacter({ panda, onPet, reverse, size = 'md' }: PandaChar
   };
 
   const isMomo = panda.id === 'momo';
-  // One big (lg = w-32 h-32), one small (sm = w-20 h-20)
-  const sizeClasses = size === 'sm' ? 'w-20 h-20' : size === 'lg' ? 'w-32 h-32' : 'w-24 h-24';
+  // One big (lg = w-32 h-32), one small (sm = w-16 h-16)
+  const sizeClasses = size === 'sm' ? 'w-16 h-16' : size === 'lg' ? 'w-32 h-32' : 'w-24 h-24';
 
   const costumeIcons: Record<string, string> = {
     Royal: '👑', Crown: '👑',
