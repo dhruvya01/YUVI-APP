@@ -16,6 +16,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { profileRepo } from '../repositories/ProfileRepository';
+import type { Profile } from '../types';
 
 interface ChatMessage {
   id: string;
@@ -41,13 +43,34 @@ export default function Chat() {
   const [previewPhoto, setPreviewPhoto] = useState<{ photo: string; caption?: string } | null>(null);
   const [activeReactionId, setActiveReactionId] = useState<string | null>(null);
 
+  // Real user profiles with Base64 photos
+  const [yuviProfile, setYuviProfile] = useState<Profile | null>(null);
+  const [manviProfile, setManviProfile] = useState<Profile | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const otherUser = currentUser === 'yuvi' ? 'manvi' : 'yuvi';
+  const activeOtherProfile = otherUser === 'manvi' ? manviProfile : yuviProfile;
+  const activeSelfProfile = currentUser === 'yuvi' ? yuviProfile : manviProfile;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Load real profile data
+  useEffect(() => {
+    async function loadUserProfiles() {
+      try {
+        const y = await profileRepo.getYuvi();
+        const m = await profileRepo.getManvi();
+        setYuviProfile(y);
+        setManviProfile(m);
+      } catch (e) {
+        console.error('Failed to fetch user profiles for chat:', e);
+      }
+    }
+    loadUserProfiles();
+  }, []);
 
   // Real-time Firestore listener
   useEffect(() => {
@@ -159,21 +182,25 @@ export default function Chat() {
             <ChevronLeft className="w-6 h-6" />
           </button>
 
-          {/* Bitmoji Avatar with Ring */}
+          {/* Profile Picture Avatar with Ring */}
           <div className="relative">
-            <div className={`w-10 h-10 rounded-full p-0.5 shadow-lg ${
+            <div className={`w-10 h-10 rounded-full p-0.5 shadow-lg overflow-hidden ${
               otherUser === 'manvi' ? 'bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500' : 'bg-gradient-to-tr from-yellow-400 via-blue-500 to-indigo-500'
             }`}>
-              <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-bold text-sm text-white">
-                {otherUser.charAt(0).toUpperCase()}
-              </div>
+              {activeOtherProfile?.photo ? (
+                <img src={activeOtherProfile.photo} alt={otherUser} className="w-full h-full rounded-full object-cover" />
+              ) : (
+                <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-bold text-sm text-white">
+                  {otherUser.charAt(0).toUpperCase()}
+                </div>
+              )}
             </div>
           </div>
 
           <div>
             <div className="flex items-center gap-1.5">
               <h2 className="text-base font-extrabold capitalize tracking-tight text-white">
-                {otherUser}
+                {activeOtherProfile?.name || otherUser}
               </h2>
               {/* Snapchat Streak Badge */}
               <div className="flex items-center gap-0.5 bg-amber-500/20 text-amber-400 text-[11px] font-black px-1.5 py-0.5 rounded-full border border-amber-500/30">
@@ -191,18 +218,20 @@ export default function Chat() {
         <div className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-full border border-slate-700">
           <button
             onClick={() => setCurrentUser('yuvi')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all ${
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 ${
               currentUser === 'yuvi' ? 'bg-[#0084FF] text-white shadow-md' : 'text-slate-400'
             }`}
           >
+            {yuviProfile?.photo && <img src={yuviProfile.photo} alt="Yuvi" className="w-3.5 h-3.5 rounded-full object-cover" />}
             Yuvi 💙
           </button>
           <button
             onClick={() => setCurrentUser('manvi')}
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all ${
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 ${
               currentUser === 'manvi' ? 'bg-[#FF2A85] text-white shadow-md' : 'text-slate-400'
             }`}
           >
+            {manviProfile?.photo && <img src={manviProfile.photo} alt="Manvi" className="w-3.5 h-3.5 rounded-full object-cover" />}
             Manvi 💖
           </button>
         </div>
@@ -229,13 +258,14 @@ export default function Chat() {
             </div>
             <p className="text-sm font-semibold text-slate-300">No Chat History Yet</p>
             <p className="text-xs text-slate-500 max-w-xs">
-              Send a Chat or Snap photo to start your conversation with {otherUser}!
+              Send a Chat or Snap photo to start your conversation!
             </p>
           </div>
         ) : (
           <AnimatePresence initial={false}>
             {messages.map((msg) => {
               const isMine = msg.sender === currentUser;
+              const senderProfile = msg.sender === 'yuvi' ? yuviProfile : manviProfile;
               const isReactionActive = activeReactionId === msg.id;
 
               return (
@@ -246,6 +276,15 @@ export default function Chat() {
                   className="flex flex-col space-y-1 relative"
                 >
                   <div className="flex items-start gap-2">
+                    {/* Profile Picture Thumbnail next to message */}
+                    <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 mt-0.5 border border-slate-700 bg-slate-800 flex items-center justify-center">
+                      {senderProfile?.photo ? (
+                        <img src={senderProfile.photo} alt={msg.sender} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[9px] font-bold uppercase text-white">{msg.sender.charAt(0)}</span>
+                      )}
+                    </div>
+
                     {/* Snapchat Color Bar Indicator */}
                     <div className={`w-1 self-stretch rounded-full shrink-0 ${
                       msg.photo ? 'bg-[#FFFC00]' : isMine ? 'bg-[#0084FF]' : 'bg-[#FF2A85]'
@@ -262,7 +301,7 @@ export default function Chat() {
                         <span className={`text-xs font-black capitalize ${
                           isMine ? 'text-blue-400' : 'text-pink-400'
                         }`}>
-                          {msg.sender}
+                          {senderProfile?.name || msg.sender}
                         </span>
                         <span className="text-[9px] text-slate-500 font-medium">
                           {formatSnapTime(msg.createdAt)}
@@ -281,7 +320,7 @@ export default function Chat() {
                             className="w-full max-h-44 object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           {msg.photoCaption && (
-                            <div className="absolute inset-x-0 bottom-6 bg-black/70 py-1 px-2 text-center text-[10px] font-bold text-white tracking-wide border-y border-white/10">
+                            <div className="absolute inset-x-0 bottom-6 bg-black/75 py-1 px-2 text-center text-[10px] font-bold text-white tracking-wide border-y border-white/10">
                               {msg.photoCaption}
                             </div>
                           )}
@@ -406,7 +445,7 @@ export default function Chat() {
                 handleSend();
               }
             }}
-            placeholder={`Send a Chat as ${currentUser}...`}
+            placeholder={`Message as ${activeSelfProfile?.name || currentUser}...`}
             className="w-full bg-transparent border-none focus:outline-none py-2 text-slate-100 placeholder-slate-500 text-xs font-sans"
           />
           <button 
