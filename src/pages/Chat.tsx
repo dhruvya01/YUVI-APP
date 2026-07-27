@@ -633,9 +633,10 @@ export default function Chat() {
         <button
           type="button"
           onClick={() => handleSend({ text: 'I Love You ❤️' })}
-          className="px-2.5 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 rounded-full text-[11px] font-bold border border-rose-500/30 shrink-0 flex items-center gap-1 active:scale-95 transition-all"
+          className="w-9 h-9 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 flex items-center justify-center shrink-0 active:scale-95 transition-all"
+          title="Send I Love You ❤️"
         >
-          <span>❤️ I Love You</span>
+          <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
         </button>
 
         {/* Text Input Pill */}
