@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, X, Gift } from 'lucide-react';
 
+const CUTE_PARTICLES = ['🌸', '🎀', '💕', '✨', '💖', '🧸', '🌷', '💘'];
+
 export default function SurpriseModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const [hearts, setHearts] = useState<{ id: number; x: number }[]>([]);
+  const [particles, setParticles] = useState<{ id: number; emoji: string; x: number }[]>([]);
 
   useEffect(() => {
     // Show surprise modal on app launch
@@ -19,33 +21,34 @@ export default function SurpriseModal() {
     sessionStorage.setItem('manvi_surprise_seen', 'true');
     setIsOpen(false);
 
-    // Launch floating hearts explosion
-    const newHearts = Array.from({ length: 25 }, (_, i) => ({
+    // Launch aesthetic floating particle explosion
+    const newParticles = Array.from({ length: 20 }, (_, i) => ({
       id: Date.now() + i,
+      emoji: CUTE_PARTICLES[i % CUTE_PARTICLES.length],
       x: Math.random() * 90 + 5
     }));
-    setHearts(newHearts);
+    setParticles(newParticles);
 
     setTimeout(() => {
-      setHearts([]);
+      setParticles([]);
     }, 2500);
   };
 
   return (
     <>
-      {/* Heart Explosion Layer */}
+      {/* Aesthetic Floating Particle Explosion Layer */}
       <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
         <AnimatePresence>
-          {hearts.map((h) => (
+          {particles.map((p) => (
             <motion.div
-              key={h.id}
-              initial={{ opacity: 1, y: '90vh', x: `${h.x}vw`, scale: 0.5 }}
-              animate={{ opacity: 0, y: '10vh', scale: 2, rotate: [0, 20, -20, 0] }}
+              key={p.id}
+              initial={{ opacity: 1, y: '85vh', x: `${p.x}vw`, scale: 0.6 }}
+              animate={{ opacity: 0, y: '15vh', scale: 1.5, rotate: [0, 15, -15, 0] }}
               exit={{ opacity: 0 }}
               transition={{ duration: 2.2, ease: 'easeOut' }}
-              className="absolute text-4xl drop-shadow-2xl"
+              className="absolute text-3xl filter drop-shadow-md"
             >
-              💖
+              {p.emoji}
             </motion.div>
           ))}
         </AnimatePresence>
@@ -61,9 +64,9 @@ export default function SurpriseModal() {
             className="fixed inset-0 z-[90] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
           >
             <motion.div
-              initial={{ scale: 0.8, y: 20 }}
+              initial={{ scale: 0.85, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.8, y: 20 }}
+              exit={{ scale: 0.85, y: 20 }}
               className="relative w-full max-w-sm bg-gradient-to-br from-slate-900 via-pink-950/80 to-purple-950 p-6 rounded-3xl border border-pink-500/30 shadow-2xl text-center text-white overflow-hidden"
             >
               {/* Decorative Glow */}
@@ -95,7 +98,7 @@ export default function SurpriseModal() {
                 </h2>
 
                 <p className="text-xs text-slate-300 leading-relaxed font-medium px-2">
-                  Crafted with all my love just for you, my princess! Welcome to your special place. ✨
+                  Crafted with endless love just for you! Welcome to your special place. ✨
                 </p>
               </div>
 
@@ -105,7 +108,7 @@ export default function SurpriseModal() {
                 className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 text-white font-extrabold text-sm shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 border border-pink-400/30"
               >
                 <Heart className="w-4 h-4 fill-white animate-pulse" />
-                <span>Love You Yuvi 😘</span>
+                <span>Love You 💕</span>
               </button>
             </motion.div>
           </motion.div>
