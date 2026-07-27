@@ -1,35 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Gamepad2, Apple, ShoppingBag, Home, Minus } from 'lucide-react';
 import { usePandaState } from '../../hooks/usePandaState';
 import { PandaCharacter } from './PandaCharacter';
 
 export function PandaWidget() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { mochi, momo, loading, feed, play, pet } = usePandaState();
   const [isMinimized, setIsMinimized] = useState(false);
   const [position, setPosition] = useState({ x: window.innerWidth - 350, y: window.innerHeight - 200 });
 
-  // Load saved position
-  useEffect(() => {
-    const saved = localStorage.getItem('panda_widget_state');
-    if (saved) {
-      try {
-        const { isMinimized: min, position: pos } = JSON.parse(saved);
-        setIsMinimized(min);
-        if (pos) setPosition(pos);
-      } catch (e) {
-        // ignore
-      }
-    }
-  }, []);
-
-  // Save state on change
-  useEffect(() => {
-    localStorage.setItem('panda_widget_state', JSON.stringify({ isMinimized, position }));
-  }, [isMinimized, position]);
-
+  // Do not render widget on Chat screen
+  if (location.pathname === '/chat') return null;
   if (loading || !mochi || !momo) return null;
 
   return (

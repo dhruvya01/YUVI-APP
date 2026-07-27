@@ -18,7 +18,7 @@ import { PandaWidget } from './components/panda/PandaWidget'
 
 function MainApp() {
   return (
-    <div className="relative w-full min-h-screen cursor-none pb-24">
+    <div className="relative w-full max-w-md mx-auto min-h-screen shadow-2xl overflow-x-hidden pb-24 bg-[var(--color-bg-main)]">
       <CustomCursor />
       <DynamicBackground />
       <BrowserRouter>

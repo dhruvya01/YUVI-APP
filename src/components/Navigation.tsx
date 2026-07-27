@@ -1,13 +1,14 @@
 import { NavLink } from 'react-router-dom';
-import { Home, BookOpen, Image as ImageIcon, Mail, Settings, User, MessageCircle, Gamepad2 } from 'lucide-react';
+import { Home, BookOpen, Image as ImageIcon, Mail, Settings, User, MessageCircle, Gamepad2, HeartHandshake } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Navigation() {
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
-    { path: '/profiles', icon: User, label: 'Profiles' },
     { path: '/chat', icon: MessageCircle, label: 'Chat' },
+    { path: '/panda-house', icon: HeartHandshake, label: 'Pets' },
     { path: '/arcade', icon: Gamepad2, label: 'Arcade' },
+    { path: '/profiles', icon: User, label: 'Profiles' },
     { path: '/story', icon: BookOpen, label: 'Story' },
     { path: '/gallery', icon: ImageIcon, label: 'Gallery' },
     { path: '/letters', icon: Mail, label: 'Letters' },
@@ -18,10 +19,10 @@ export default function Navigation() {
     <motion.div 
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 1.5, type: 'spring' }}
-      className="fixed bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-[95%] md:w-auto"
+      transition={{ delay: 0.5, type: 'spring' }}
+      className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50 w-[98%] max-w-md"
     >
-      <div className="glass-panel rounded-full px-4 md:px-8 py-3 flex items-center justify-around md:justify-center md:gap-8 shadow-2xl">
+      <div className="glass-panel rounded-full px-3 py-2 flex items-center justify-between shadow-2xl backdrop-blur-xl border border-[var(--color-border-glass)]">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
