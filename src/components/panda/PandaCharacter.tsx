@@ -60,17 +60,17 @@ export function PandaCharacter({ panda, onPet, reverse, size = 'md' }: PandaChar
           </motion.div>
         )}
 
-        {/* Panda Dude Image (User Uploaded Artwork) */}
-        <div className={`relative flex items-center justify-center rounded-3xl overflow-hidden shadow-xl border-2 ${isMomo ? 'border-pink-300/60 bg-pink-100/40' : 'border-sky-300/60 bg-sky-100/40'} ${reverse ? 'scale-x-[-1]' : ''} ${sizeClasses}`}>
+        {/* Panda Dude Image (User Uploaded Artwork with Transparent BG) */}
+        <div className={`relative flex items-center justify-center ${reverse ? 'scale-x-[-1]' : ''} ${sizeClasses}`}>
           <img 
             src="/assets/panda_dude.png" 
             alt={panda.name} 
-            className="w-full h-full object-cover rounded-2xl" 
+            className="w-full h-full object-contain filter drop-shadow-xl" 
           />
 
           {/* Momo Pink Bow Accent */}
           {isMomo && (
-            <div className="absolute top-1 right-1 text-sm filter drop-shadow z-20">
+            <div className="absolute top-0 right-0 text-sm filter drop-shadow z-20">
               🎀
             </div>
           )}
