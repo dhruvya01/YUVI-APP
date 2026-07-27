@@ -12,12 +12,14 @@ import Chat from './pages/Chat'
 import Arcade from './pages/Arcade'
 import PandaHouse from './pages/PandaHouse'
 import { PandaWidget } from './components/panda/PandaWidget'
+import SurpriseModal from './components/SurpriseModal'
 
 function MainApp() {
   return (
     <div className="relative w-full max-w-md mx-auto min-h-screen shadow-2xl overflow-x-hidden pb-24 bg-[var(--color-bg-main)]">
       <CustomCursor />
       <DynamicBackground />
+      <SurpriseModal />
       <BrowserRouter>
         <Navigation />
         <PandaWidget />
