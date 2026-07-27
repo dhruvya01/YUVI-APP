@@ -1,184 +1,207 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Image as ImageIcon, Smile, Mic, Paperclip, MoreVertical } from 'lucide-react';
+import { Send, Smile, UserCheck } from 'lucide-react';
+import { collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
-interface Message {
+interface ChatMessage {
   id: string;
   text: string;
   sender: 'yuvi' | 'manvi';
-  timestamp: string;
-  status: 'sent' | 'delivered' | 'read';
+  createdAt: string;
 }
 
-const initialMessages: Message[] = [
-  { id: '1', text: 'Hey baby! 💕', sender: 'yuvi', timestamp: '10:00 AM', status: 'read' },
-  { id: '2', text: 'Hiiii! How is your day going? 🥰', sender: 'manvi', timestamp: '10:05 AM', status: 'read' },
-  { id: '3', text: 'Missing you so much! Can\'t wait to see you later.', sender: 'yuvi', timestamp: '10:06 AM', status: 'read' },
-  { id: '4', text: 'Missing you more!! 🥺', sender: 'manvi', timestamp: '10:10 AM', status: 'read' },
-  { id: '5', text: 'I built something special for us...', sender: 'yuvi', timestamp: '10:15 AM', status: 'read' },
-];
-
 export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+  const [currentUser, setCurrentUser] = useState<'yuvi' | 'manvi'>('yuvi');
+  const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const currentUser = 'yuvi'; // We pretend we are Yuvi testing this
-  const otherUser = 'manvi';
+  const otherUser = currentUser === 'yuvi' ? 'manvi' : 'yuvi';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Real-time Firestore listener
+  useEffect(() => {
+    const chatRef = collection(db, 'forever_us_chat');
+    const q = query(chatRef, orderBy('createdAt', 'asc'));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetched: ChatMessage[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          text: data.text || '',
+          sender: data.sender || 'yuvi',
+          createdAt: data.createdAt || new Date().toISOString()
+        };
+      });
+
+      setMessages(fetched);
+      setLoading(false);
+    }, (error) => {
+      console.error('Firestore chat error:', error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputText.trim()) return;
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text: inputText,
-      sender: currentUser,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      status: 'sent'
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
+    const textToSend = inputText.trim();
     setInputText('');
-    
-    // Simulate Manvi typing back
-    setTimeout(() => setIsTyping(true), 1000);
-    setTimeout(() => {
-      setIsTyping(false);
-      const replyMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: 'Awww that is so sweet!! I love it! 😍',
-        sender: otherUser,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        status: 'read'
-      };
-      setMessages((prev) => [...prev, replyMessage]);
-    }, 4000);
+
+    try {
+      await addDoc(collection(db, 'forever_us_chat'), {
+        text: textToSend,
+        sender: currentUser,
+        createdAt: new Date().toISOString()
+      });
+    } catch (e) {
+      console.error('Error sending message:', e);
+    }
+  };
+
+  const formatTime = (isoString: string) => {
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return '';
+    }
   };
 
   return (
-    <div className="pt-8 pb-32 px-4 max-w-4xl mx-auto relative z-10 flex flex-col items-center justify-center">
-      <div className="w-full glass-panel rounded-3xl overflow-hidden flex flex-col border border-[var(--color-border-glass)] shadow-2xl backdrop-blur-xl h-[calc(100vh-10rem)] max-h-[800px]">
+    <div className="pt-6 pb-28 px-4 max-w-4xl mx-auto relative z-10 flex flex-col items-center justify-center">
+      <div className="w-full glass-panel rounded-3xl overflow-hidden flex flex-col border border-[var(--color-border-glass)] shadow-2xl backdrop-blur-xl h-[calc(100vh-10rem)] max-h-[750px]">
         
         {/* Chat Header */}
         <div className="px-6 py-4 border-b border-[var(--color-border-glass)] flex items-center justify-between bg-black/5">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] flex items-center justify-center text-xl font-serif text-white shadow-md">
+              <div className={`w-11 h-11 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-md ${
+                otherUser === 'manvi' ? 'bg-gradient-to-br from-pink-400 to-rose-500' : 'bg-gradient-to-br from-blue-500 to-indigo-600'
+              }`}>
                 {otherUser.charAt(0).toUpperCase()}
               </div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></div>
             </div>
             <div>
-              <h2 className="text-xl font-bold font-serif text-[var(--color-text-main)] capitalize">{otherUser}</h2>
-              <p className="text-xs text-[var(--color-text-muted)] font-medium">Online</p>
+              <h2 className="text-lg font-bold font-serif text-[var(--color-text-main)] capitalize">
+                Chatting with {otherUser} 💕
+              </h2>
+              <p className="text-xs text-[var(--color-text-muted)] font-medium">Realtime Sync Active</p>
             </div>
           </div>
-          <button className="p-2 hover:bg-black/5 rounded-full transition-colors text-[var(--color-text-muted)]">
-            <MoreVertical className="w-5 h-5" />
-          </button>
+
+          {/* User Switcher for Dual-User Testing */}
+          <div className="flex items-center gap-2 bg-black/10 p-1.5 rounded-full border border-[var(--color-border-glass)]">
+            <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)] px-2 hidden sm:inline">Sending as:</span>
+            <button
+              onClick={() => setCurrentUser('yuvi')}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
+                currentUser === 'yuvi' ? 'bg-blue-600 text-white shadow-sm' : 'text-[var(--color-text-muted)] hover:text-black'
+              }`}
+            >
+              <UserCheck className="w-3 h-3" /> Yuvi
+            </button>
+            <button
+              onClick={() => setCurrentUser('manvi')}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
+                currentUser === 'manvi' ? 'bg-pink-500 text-white shadow-sm' : 'text-[var(--color-text-muted)] hover:text-black'
+              }`}
+            >
+              <UserCheck className="w-3 h-3" /> Manvi
+            </button>
+          </div>
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
-          <div className="text-center text-xs text-[var(--color-text-muted)] font-medium mb-6 bg-black/5 rounded-full px-4 py-1 w-max mx-auto border border-[var(--color-border-glass)]">
-            Today
-          </div>
-          
-          <AnimatePresence initial={false}>
-            {messages.map((msg) => {
-              const isMine = msg.sender === currentUser;
-              return (
-                <motion.div
-                  key={msg.id}
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
-                >
-                  <div className="flex items-end gap-2 max-w-[75%]">
-                    {!isMine && (
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] flex-shrink-0 flex items-center justify-center text-[10px] text-white">
-                        {msg.sender.charAt(0).toUpperCase()}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
+          {loading ? (
+            <div className="flex items-center justify-center h-full text-sm text-[var(--color-text-muted)] animate-pulse">
+              Connecting to real-time chat...
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center text-[var(--color-text-muted)] space-y-2">
+              <span className="text-4xl">💌</span>
+              <p className="text-sm font-medium">No messages yet. Send a message to start chatting!</p>
+            </div>
+          ) : (
+            <AnimatePresence initial={false}>
+              {messages.map((msg) => {
+                const isMine = msg.sender === currentUser;
+                return (
+                  <motion.div
+                    key={msg.id}
+                    initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
+                  >
+                    <div className="flex items-end gap-2 max-w-[80%] md:max-w-[65%]">
+                      {!isMine && (
+                        <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-sm ${
+                          msg.sender === 'manvi' ? 'bg-pink-500' : 'bg-blue-600'
+                        }`}>
+                          {msg.sender.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div 
+                        className={`px-4 py-2.5 rounded-2xl shadow-sm relative text-sm ${
+                          isMine 
+                            ? 'bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] text-white rounded-br-sm' 
+                            : 'bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-[var(--color-text-main)] border border-[var(--color-border-glass)] rounded-bl-sm'
+                        }`}
+                      >
+                        <p className="leading-relaxed whitespace-pre-wrap break-words">{msg.text}</p>
                       </div>
-                    )}
-                    <div 
-                      className={`px-4 py-3 rounded-2xl shadow-sm relative ${
-                        isMine 
-                          ? 'bg-gradient-to-br from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] text-white rounded-br-sm' 
-                          : 'bg-white/60 backdrop-blur-md text-[var(--color-text-main)] border border-[var(--color-border-glass)] rounded-bl-sm'
-                      }`}
-                    >
-                      <p className="text-[15px] leading-relaxed">{msg.text}</p>
                     </div>
-                  </div>
-                  <div className={`text-[10px] text-[var(--color-text-muted)] mt-1 ${isMine ? 'text-right pr-2' : 'text-left pl-10'}`}>
-                    {msg.timestamp} {isMine && <span className="ml-1 opacity-70">✓✓</span>}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-          
-          {isTyping && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-end gap-2"
-            >
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] flex-shrink-0 flex items-center justify-center text-[10px] text-white">
-                {otherUser.charAt(0).toUpperCase()}
-              </div>
-              <div className="bg-white/60 backdrop-blur-md border border-[var(--color-border-glass)] px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1">
-                <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} className="w-2 h-2 rounded-full bg-[var(--color-accent-primary)] opacity-60" />
-                <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }} className="w-2 h-2 rounded-full bg-[var(--color-accent-primary)] opacity-60" />
-                <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} className="w-2 h-2 rounded-full bg-[var(--color-accent-primary)] opacity-60" />
-              </div>
-            </motion.div>
+                    <div className={`text-[10px] text-[var(--color-text-muted)] mt-1 ${isMine ? 'text-right pr-1' : 'text-left pl-9'}`}>
+                      {formatTime(msg.createdAt)}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           )}
           <div ref={messagesEndRef} />
         </div>
 
         {/* Chat Input */}
-        <div className="p-3 bg-black/5 border-t border-[var(--color-border-glass)] flex items-end gap-2">
-          <div className="flex gap-2 text-[var(--color-text-muted)] pb-3 px-1">
-            <button className="hover:text-[var(--color-accent-primary)] transition-colors"><Paperclip className="w-5 h-5" /></button>
-            <button className="hover:text-[var(--color-accent-primary)] transition-colors"><ImageIcon className="w-5 h-5" /></button>
-          </div>
-          
-          <div className="flex-1 bg-[var(--color-bg-glass)] backdrop-blur-md border border-[var(--color-border-glass)] rounded-2xl flex items-end shadow-inner mb-1">
-            <button className="p-3 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-colors">
+        <div className="p-3 bg-black/5 border-t border-[var(--color-border-glass)] flex items-center gap-2">
+          <div className="flex-1 bg-[var(--color-bg-glass)] backdrop-blur-md border border-[var(--color-border-glass)] rounded-2xl flex items-center shadow-inner">
+            <button type="button" className="p-3 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-colors">
               <Smile className="w-5 h-5" />
             </button>
-            <textarea 
+            <input 
+              type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === 'Enter') {
                   e.preventDefault();
                   handleSend();
                 }
               }}
-              placeholder="Type a message..."
-              className="flex-1 max-h-32 bg-transparent border-none focus:outline-none resize-none py-3 text-[var(--color-text-main)] placeholder-[var(--color-text-muted)]"
-              rows={1}
+              placeholder={`Message as ${currentUser === 'yuvi' ? 'Yuvi 💙' : 'Manvi 💖'}...`}
+              className="flex-1 bg-transparent border-none focus:outline-none py-3 text-[var(--color-text-main)] placeholder-[var(--color-text-muted)] text-sm"
             />
-            <button className="p-3 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-colors">
-              <Mic className="w-5 h-5" />
-            </button>
           </div>
 
           <button 
+            type="button"
             onClick={handleSend}
             disabled={!inputText.trim()}
-            className="p-3 mb-1 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-secondary)] text-white rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+            className="p-3 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-secondary)] text-white rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md flex items-center justify-center"
           >
             <Send className="w-5 h-5" />
           </button>

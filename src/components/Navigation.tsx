@@ -48,17 +48,6 @@ export default function Navigation() {
             )}
           </NavLink>
         ))}
-        
-        {/* Placeholder for future features button */}
-        <button className="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text-main)] transition-colors group relative">
-           <div className="flex flex-col items-center">
-             <div className="flex gap-0.5">
-               <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
-               <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
-               <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
-             </div>
-           </div>
-        </button>
       </div>
     </motion.div>
   );

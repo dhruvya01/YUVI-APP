@@ -1,5 +1,4 @@
-import { ThemeProvider, useTheme } from './context/ThemeContext'
-import MagicalIntro from './components/MagicalIntro'
+import { ThemeProvider } from './context/ThemeContext'
 import Home from './components/Home'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
@@ -18,12 +17,6 @@ import PandaHouse from './pages/PandaHouse'
 import { PandaWidget } from './components/panda/PandaWidget'
 
 function MainApp() {
-  const { introSeen } = useTheme()
-
-  if (!introSeen) {
-    return <MagicalIntro />
-  }
-
   return (
     <div className="relative w-full min-h-screen cursor-none pb-24">
       <CustomCursor />
