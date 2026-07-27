@@ -7,8 +7,7 @@ import {
   Gamepad2, 
   Image as ImageIcon, 
   Sparkles,
-  Heart,
-  Flame
+  Heart
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { memoryRepo } from '../../repositories/MemoryRepository';
@@ -21,7 +20,6 @@ export default function Dashboard() {
   const [yuvi, setYuvi] = useState<Profile | null>(null);
   const [manvi, setManvi] = useState<Profile | null>(null);
   const [floatingHearts, setFloatingHearts] = useState<{ id: number; emoji: string; x: number }[]>([]);
-  const [cuddleCount, setCuddleCount] = useState(108);
 
   useEffect(() => {
     async function loadData() {
@@ -43,7 +41,6 @@ export default function Dashboard() {
   }, []);
 
   const triggerLoveEffect = (emoji: string) => {
-    setCuddleCount((prev) => prev + 1);
     const newHeart = { id: Date.now(), emoji, x: Math.random() * 80 + 10 };
     setFloatingHearts((prev) => [...prev, newHeart]);
     setTimeout(() => {
@@ -78,14 +75,10 @@ export default function Dashboard() {
         animate={{ scale: 1, opacity: 1 }}
         className="glass-panel p-5 rounded-3xl relative overflow-hidden border border-[var(--color-border-glass)] shadow-xl bg-gradient-to-br from-pink-500/10 via-purple-500/5 to-rose-500/10"
       >
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-1.5 bg-rose-500/20 text-rose-400 text-xs font-bold px-3 py-1 rounded-full border border-rose-500/30">
+        <div className="flex items-center justify-center mb-4">
+          <div className="flex items-center gap-1.5 bg-rose-500/20 text-rose-400 text-xs font-bold px-3.5 py-1 rounded-full border border-rose-500/30">
             <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500 animate-pulse" />
             <span>99.9% Match • Infinite Love</span>
-          </div>
-          <div className="flex items-center gap-1 bg-amber-500/20 text-amber-400 text-xs font-bold px-2.5 py-1 rounded-full border border-amber-500/30">
-            <Flame className="w-3.5 h-3.5 fill-amber-400" />
-            <span>{cuddleCount} Cuddles</span>
           </div>
         </div>
 
