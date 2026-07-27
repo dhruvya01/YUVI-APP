@@ -8,6 +8,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { memoryRepo } from '../../repositories/MemoryRepository';
 import { profileRepo } from '../../repositories/ProfileRepository';
+import { usePandaState } from '../../hooks/usePandaState';
+import { PandaCharacter } from '../panda/PandaCharacter';
 import type { Memory, Profile } from '../../types';
 
 const container = {
@@ -25,6 +27,7 @@ const item = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { mochi, momo } = usePandaState();
   const [latestMemory, setLatestMemory] = useState<Memory | null>(null);
   const [yuvi, setYuvi] = useState<Profile | null>(null);
   const [manvi, setManvi] = useState<Profile | null>(null);
@@ -182,17 +185,12 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center justify-between p-3 rounded-2xl border border-[var(--color-border-glass)] bg-black/5">
-          <div className="flex items-center gap-3">
-            <motion.div
-              animate={{ y: [0, -3, 0], rotate: [0, 3, -3, 0] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-              className="text-2xl"
-            >
-              🐼
-            </motion.div>
+          <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate('/panda-house')}>
+            {mochi && <PandaCharacter panda={mochi} onPet={() => triggerLoveEffect('💖')} size="md" />}
+            {momo && <PandaCharacter panda={momo} onPet={() => triggerLoveEffect('💖')} size="sm" reverse />}
             <div>
               <p className="text-xs font-bold text-[var(--color-text-main)]">Mochi & Momo</p>
-              <p className="text-[9px] text-[var(--color-text-muted)]">Super Happy & Cozy 🌿</p>
+              <p className="text-[9px] text-[var(--color-text-muted)]">Big & Small Dude Pandas 🌿</p>
             </div>
           </div>
           <motion.button
