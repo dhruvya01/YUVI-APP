@@ -130,7 +130,7 @@ export default function Dashboard() {
       {/* Adorable Quick App Shortcuts Grid */}
       <div className="grid grid-cols-4 gap-2.5">
         {[
-          { label: 'Snap Chat', icon: MessageCircle, path: '/chat', color: 'from-blue-500 to-indigo-600', emoji: '💬' },
+          { label: 'Chat', icon: MessageCircle, path: '/chat', color: 'from-blue-500 to-indigo-600', emoji: '💬' },
           { label: 'Pets', icon: HeartHandshake, path: '/panda-house', color: 'from-emerald-500 to-teal-600', emoji: '🐼' },
           { label: 'Memories', icon: ImageIcon, path: '/gallery', color: 'from-rose-500 to-pink-600', emoji: '📸' },
           { label: 'Arcade', icon: Gamepad2, path: '/arcade', color: 'from-purple-500 to-amber-500', emoji: '🕹️' },
