@@ -17,40 +17,69 @@ export default function Navigation() {
   ];
 
   return (
-    <motion.div 
+    <motion.nav
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.3, type: 'spring' }}
-      className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50 w-[98%] max-w-md"
+      transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 25 }}
+      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md"
     >
-      <div className="glass-panel rounded-full px-3 py-2 flex items-center justify-between shadow-2xl backdrop-blur-xl border border-[var(--color-border-glass)]">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) => 
-              `relative group p-2 flex flex-col items-center transition-all ${
-                isActive ? 'text-[var(--color-accent-primary)] font-bold scale-110' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-main)]'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <item.icon className="w-5 h-5" />
-                <span className="text-[9px] mt-0.5 font-medium tracking-wider hidden md:block opacity-0 group-hover:opacity-100 absolute -top-8 bg-[var(--color-bg-glass)] px-2 py-1 rounded backdrop-blur-md border border-[var(--color-border-glass)] transition-opacity shadow-lg">
-                  {item.label}
-                </span>
+      <div className="relative rounded-2xl px-2 py-1.5 flex items-center justify-around"
+        style={{
+          background: 'rgba(0,0,0,0.35)',
+          backdropFilter: 'blur(24px) saturate(1.8)',
+          WebkitBackdropFilter: 'blur(24px) saturate(1.8)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+        }}
+      >
+        {navItems.map((item) => {
+          const isActive = item.path === '/' 
+            ? location.pathname === '/' 
+            : location.pathname.startsWith(item.path);
+
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className="relative flex flex-col items-center gap-0.5 py-1.5 px-2 rounded-xl transition-all"
+            >
+              <div className="relative">
+                <item.icon
+                  className={`w-[18px] h-[18px] transition-all duration-300 ${
+                    isActive
+                      ? 'text-white scale-110'
+                      : 'text-white/40 group-hover:text-white/60'
+                  }`}
+                />
                 {isActive && (
-                  <motion.div 
-                    layoutId="nav-indicator"
-                    className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-[var(--color-accent-primary)]"
+                  <motion.div
+                    layoutId="nav-glow"
+                    className="absolute -inset-2.5 rounded-xl"
+                    style={{
+                      background: `radial-gradient(circle, var(--glow) 0%, transparent 70%)`,
+                      opacity: 0.7,
+                      zIndex: -1,
+                    }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
-              </>
-            )}
-          </NavLink>
-        ))}
+              </div>
+              <span className={`text-[8px] font-semibold tracking-wide transition-all duration-300 ${
+                isActive ? 'text-white/90' : 'text-white/30'
+              }`}>
+                {item.label}
+              </span>
+              {isActive && (
+                <motion.div
+                  layoutId="nav-dot"
+                  className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-[var(--color-accent-primary)]"
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+            </NavLink>
+          );
+        })}
       </div>
-    </motion.div>
+    </motion.nav>
   );
 }

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from 'framer-motion';
 import Dashboard from './dashboard/Dashboard';
-import { Bell } from 'lucide-react';
 
 export default function Home() {
   const [now, setNow] = useState(new Date());
@@ -19,31 +18,49 @@ export default function Home() {
   const seconds = Math.floor((diffMs / 1000) % 60);
 
   return (
-    <div className="min-h-screen pt-12 pb-32 px-4 max-w-6xl mx-auto relative z-10">
-      {/* Dynamic Header */}
-      <motion.header 
-        initial={{ y: -50, opacity: 0 }}
+    <div className="min-h-screen pt-3 pb-28 px-4 max-w-md mx-auto relative z-10">
+      {/* Compact Floating Header */}
+      <motion.header
+        initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="sticky top-4 z-40 mb-12 glass-panel rounded-full px-6 py-3 flex items-center justify-between shadow-lg backdrop-blur-xl border border-[var(--color-border-glass)]"
+        className="mb-5 flex items-center justify-between px-1"
       >
         <div className="flex items-center gap-2">
-           <span className="font-serif text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
-             Forever Us
-           </span>
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] flex items-center justify-center shadow-lg animate-pulse-glow">
+            <span className="text-sm">💕</span>
+          </div>
+          <span className="font-serif text-lg font-bold text-gradient">
+            Forever Us
+          </span>
         </div>
-        <div className="flex items-center gap-4">
-           <div className="hidden md:flex gap-4 text-sm font-medium text-[var(--color-text-muted)]">
-             <span>{days}d {hours}h {minutes}m {seconds}s</span>
-           </div>
-           <button className="relative p-2 rounded-full bg-black/5 hover:bg-black/10 transition-colors">
-             <Bell className="w-5 h-5 text-[var(--color-text-main)]" />
-             <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full animate-ping"></span>
-             <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span>
-           </button>
+
+        {/* Living Counter */}
+        <div className="glass-panel rounded-xl px-3 py-1.5 flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {[
+              { val: days, label: 'd' },
+              { val: hours, label: 'h' },
+              { val: minutes, label: 'm' },
+              { val: seconds, label: 's' },
+            ].map((unit) => (
+              <div key={unit.label} className="flex items-baseline">
+                <motion.span
+                  key={`${unit.label}-${unit.val}`}
+                  initial={{ y: -8, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  className="text-xs font-bold text-[var(--color-text-main)] tabular-nums"
+                >
+                  {unit.val}
+                </motion.span>
+                <span className="text-[8px] text-[var(--color-text-muted)] font-medium">{unit.label}</span>
+              </div>
+            ))}
+          </div>
+          <span className="text-[8px] text-[var(--color-accent-primary)] font-bold">❤️</span>
         </div>
       </motion.header>
 
-      {/* Main Dashboard Grid */}
+      {/* Dashboard */}
       <Dashboard />
     </div>
   );
